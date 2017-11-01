@@ -156,6 +156,8 @@ struct TConfig
 	int EnableBMP085;
 	int EnableBME280;
 	int ExternalDS18B20;
+    int EnableMCP3002;
+    double MCP3002Ref;
 	
 	// Logging
 	int EnableGPSLogging;

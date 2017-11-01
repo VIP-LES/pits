@@ -167,6 +167,14 @@ void LoadConfigFile(struct TConfig *Config)
 	{
 		printf("BME280 Enabled\n");
 	}
+    
+    ReadBoolean(fp, "enable_mcp3002", -1, 0, &(Config->EnableMCP3002));
+    if (Config->EnableMCP3002)
+    {
+        printf("MCP3002 Enabled\n");
+    }
+    
+    Config->MCP3002Ref = ReadFloat(fp, "mcp3002_ref", -1, 1, 3.3);
 
 	ReadString(fp, "pipe_payload", -1, Config->Channels[PIPE_CHANNEL].PayloadID, sizeof(Config->Channels[PIPE_CHANNEL].PayloadID), 0);
 	if (Config->Channels[PIPE_CHANNEL].PayloadID[0])
@@ -899,6 +907,15 @@ int main(void)
 			return 1;
 		}
 	}
+    
+    if (Config.EnableMCP3002)
+    {
+        if (pthread_create(&MCP3002Thread, NULL, MCP3002Loop, &GPS))
+        {
+            fprintf(stderr, "Error creating MCP3002 thread\n");
+            return 1
+        }
+    }
 	
 	if (Config.Channels[PIPE_CHANNEL].PayloadID[0])
 	{
