@@ -22,6 +22,7 @@ struct TGPS
 	float DS18B20Temperature[2];
 	float BatteryVoltage;
 	float BMP180Temperature;
+	int GeigerCount;
 	float Humidity;
 	float Pressure;
 	float BoardCurrent;

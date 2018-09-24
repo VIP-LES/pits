@@ -48,6 +48,7 @@
 #include "led.h"
 #include "bmp085.h"
 #include "bme280.h"
+#include "geiger.h"
 #include "aprs.h"
 #include "lora.h"
 #include "pipe.h"
@@ -166,6 +167,12 @@ void LoadConfigFile(struct TConfig *Config)
 	if (Config->EnableBME280)
 	{
 		printf("BME280 Enabled\n");
+	}
+
+	ReadBoolean(fp, "enable_geiger", -1, 0, &(Config->EnableGeiger));
+	if (Config->EnableGeiger)
+	{
+		printf("Geiger Counter Enabled\n");
 	}
 
 	ReadString(fp, "pipe_payload", -1, Config->Channels[PIPE_CHANNEL].PayloadID, sizeof(Config->Channels[PIPE_CHANNEL].PayloadID), 0);
@@ -621,7 +628,7 @@ int main(void)
 	unsigned char Sentence[200];
 	struct stat st = {0};
 	struct TGPS GPS;
-	pthread_t PredictionThread, LoRaThread, APRSThread, GPSThread, DS18B20Thread, ADCThread, CameraThread, BMP085Thread, BME280Thread, LEDThread, LogThread, PipeThread;
+	pthread_t PredictionThread, LoRaThread, APRSThread, GPSThread, DS18B20Thread, ADCThread, CameraThread, BMP085Thread, BME280Thread, GeigerThread, LEDThread, LogThread, PipeThread;
 	if (prog_count("tracker") > 1)
 	
 	{
@@ -896,6 +903,15 @@ int main(void)
 		if (pthread_create(&BME280Thread, NULL, BME280Loop, &GPS))
 		{
 			fprintf(stderr, "Error creating BME280 thread\n");
+			return 1;
+		}
+	}
+
+	if (Config.EnableGeiger)
+	{
+		if (pthread_create(&GeigerThread, NULL, GeigerLoop, &GPS))
+		{
+			fprintf(stderr, "Error creating Geiger Counter thread\n", );
 			return 1;
 		}
 	}
