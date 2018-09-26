@@ -911,7 +911,7 @@ int main(void)
 	{
 		if (pthread_create(&GeigerThread, NULL, GeigerLoop, &GPS))
 		{
-			fprintf(stderr, "Error creating Geiger Counter thread\n", );
+			fprintf(stderr, "Error creating Geiger Counter thread\n");
 			return 1;
 		}
 	}
