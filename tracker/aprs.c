@@ -311,7 +311,7 @@ void SendAPRS(struct TGPS *GPS)
 	unsigned char frames[4][200];
 	int lengths[4];
 	int message_count, total_length;
-	char stlm[9];
+	char stlm[11];
 	char slat[5];
 	char slng[5];
 	double aprs_lat, aprs_lon;
@@ -336,6 +336,7 @@ void SendAPRS(struct TGPS *GPS)
 	aprs_voltage = GPS->BatteryVoltage * 1000;
 	ax25_base91enc(stlm + 4, 2, aprs_temperature);
 	ax25_base91enc(stlm + 6, 2, aprs_voltage);
+	ax25_base91enc(stlm + 8, 2, GPS->GeigerCount);
 	
     ax25_frame(frames[0], &lengths[0],
 		Config.APRS_Callsign,
@@ -369,7 +370,7 @@ void SendAPRS(struct TGPS *GPS)
 		Config.APRS_ID,
         APRS_DEVID, 0,
         0, 0,
-        ":%-9s:PARM.Satellites,Temperature,Battery",
+        ":%-9s:PARM.Satellites,Temperature,Battery,GeigerCount",
         s);
 		total_length += lengths[1];
 
@@ -378,7 +379,7 @@ void SendAPRS(struct TGPS *GPS)
 			Config.APRS_ID,
 			APRS_DEVID, 0,
 			0, 0,
-			":%-9s:UNIT.Sats,deg.C,Volts",
+			":%-9s:UNIT.Sats,deg.C,Volts,CPM",
 			s);
 		total_length += lengths[2];
 

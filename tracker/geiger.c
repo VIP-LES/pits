@@ -16,7 +16,7 @@
 #include "gps.h"
 #include "misc.h"
 
-#define GEIGER_ADDRESS 0x04		// I2C address of geiger counter
+#define GEIGER_ADDRESS 0x20		// I2C address of geiger counter
 
 void *GeigerLoop(void *some_void_ptr)
 {
