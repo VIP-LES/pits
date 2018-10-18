@@ -25,7 +25,7 @@ void *GeigerLoop(void *some_void_ptr)
 	
 	while (1)
 	{
-		if ((fd = open_i2c(GEIGER_ADDRESS)) >= 0)
+		if ((fd = open_i2c(GEIGER_ADDRESS)) > 0)
 		{
 			char bytes[4];
 			read(fd, bytes, 4);
