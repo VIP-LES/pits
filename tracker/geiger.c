@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <linux/i2c-dev.h>
 #include <fcntl.h>
 #include <string.h>
@@ -22,6 +23,7 @@ void *GeigerLoop(void *some_void_ptr)
 {
 	struct TGPS *GPS;
 	int fd;
+	FILE *log;
 
 	GPS = (struct TGPS *)some_void_ptr;
 
@@ -32,8 +34,18 @@ void *GeigerLoop(void *some_void_ptr)
 		if ((fd = open_i2c(GEIGER_ADDRESS)) >= 0)
 		{
 			int countPerMinute = wiringPiI2CRead(fd);
-			printf("Counts Per Minute = %d\n", countPerMinute);
-			GPS->GeigerCount = countPerMinute;
+
+			if (countPerMinute >= 0)
+			{
+				printf("Counts Per Minute = %d\n", countPerMinute);
+				GPS->GeigerCount = countPerMinute;
+
+				log = fopen("geigerlog.txt", "a");
+				time_t currentTime = time(NULL);
+
+				fprintf(log, "%s -- %d cpm\n", asctime(localtime(&currentTime)), countPerMinute);
+				fclose(log);
+			}
 
 			close(fd);
 		}

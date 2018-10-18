@@ -174,6 +174,10 @@ void LoadConfigFile(struct TConfig *Config)
 	{
 		printf("Geiger Counter Enabled\n");
 	}
+	else
+	{
+		printf("Geiger Counter DISABLED\n");
+	}
 
 	ReadString(fp, "pipe_payload", -1, Config->Channels[PIPE_CHANNEL].PayloadID, sizeof(Config->Channels[PIPE_CHANNEL].PayloadID), 0);
 	if (Config->Channels[PIPE_CHANNEL].PayloadID[0])
