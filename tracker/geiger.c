@@ -47,7 +47,7 @@ void *GeigerLoop(void *some_void_ptr)
 				char logDate[11];
 				strftime(logDate, 11, "%Y-%m-%d", localtime(&currentTime));
 				char *fileName;
-				sprintf(fileName, "logs/geigerlog-%s.csv", logDate)
+				sprintf(fileName, "logs/geigerlog-%s.csv", logDate);
 				log = fopen(fileName, "a");
 
 				fprintf(log, "%s, %d, cpm\n", timestamp, countPerMinute);
