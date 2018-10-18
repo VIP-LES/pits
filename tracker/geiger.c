@@ -27,8 +27,6 @@ void *GeigerLoop(void *some_void_ptr)
 	{
 		if ((fd = open_i2c(GEIGER_ADDRESS)) >= 0)
 		{
-			printf("Geiger FD = %d\n", fd);
-			
 			char bytes[4];
 			read(fd, bytes, 4);
 			int countPerMinute = bytes[0] | ( (int)bytes[1] << 8 ) | ( (int)bytes[2] << 16 ) | ( (int)bytes[3] << 24 );
@@ -41,10 +39,16 @@ void *GeigerLoop(void *some_void_ptr)
 				//printf("Counts Per Minute = %d\n", countPerMinute);
 				GPS->GeigerCount = countPerMinute;
 
-				log = fopen("geigerlog.csv", "a");
 				time_t currentTime = time(NULL);
+
 				char timestamp[26];
 				strftime(timestamp, 26, "%Y-%m-%d %H:%M:%S", localtime(&currentTime));
+
+				char logDate[11];
+				strftime(logDate, 11, "%Y-%m-%d", localtime(&currentTime));
+				char *fileName;
+				sprintf(fileName, "logs/geigerlog-%s.csv", logDate)
+				log = fopen(fileName, "a");
 
 				fprintf(log, "%s, %d, cpm\n", timestamp, countPerMinute);
 				fclose(log);
