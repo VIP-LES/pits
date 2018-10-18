@@ -39,10 +39,12 @@ void *GeigerLoop(void *some_void_ptr)
 				//printf("Counts Per Minute = %d\n", countPerMinute);
 				GPS->GeigerCount = countPerMinute;
 
-				log = fopen("geigerlog.txt", "a");
+				log = fopen("geigerlog.csv", "a");
 				time_t currentTime = time(NULL);
+				char timestamp[26];
+				strftime(timestamp, 26, "%Y-%m-%d %H:%M:%S", localtime(&currentTime));
 
-				fprintf(log, "%s -- %d cpm\n", asctime(localtime(&currentTime)), countPerMinute);
+				fprintf(log, "%s, %d, cpm\n", timestamp, countPerMinute);
 				fclose(log);
 			}
 
