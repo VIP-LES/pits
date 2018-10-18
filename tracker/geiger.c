@@ -25,8 +25,10 @@ void *GeigerLoop(void *some_void_ptr)
 	
 	while (1)
 	{
-		if ((fd = wiringPiI2CSetup(GEIGER_ADDRESS)) > 0)
+		if ((fd = open_i2c(GEIGER_ADDRESS)) >= 0)
 		{
+			printf("Geiger FD = %d\n", fd);
+			
 			char bytes[4];
 			read(fd, bytes, 4);
 			int countPerMinute = bytes[0] | ( (int)bytes[1] << 8 ) | ( (int)bytes[2] << 16 ) | ( (int)bytes[3] << 24 );
