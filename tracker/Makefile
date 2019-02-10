@@ -11,7 +11,7 @@ INDOPT= -bap -bl -blf -bli0 -brs -cbi0 -cdw -cs -ci4 -cli4 -i4 -ip0 -nbc -nce -l
 
 CC=gcc
 CFLAGS=-Wall -O3
-LDFLAGS= -lm -lwiringPi -lwiringPiDev -lpthread -lpigpio -lrt
+LDFLAGS= -lm -lwiringPi -lwiringPiDev -lpthread -lpigpio -lrt -lcrypt
 RM=rm
 
 %.o: %.c *.h     # combined w/ next line will compile recently changed .c files
@@ -25,7 +25,7 @@ $(EXE): $(OBJ)   # $(EXE) is dependent on all of the files in $(OBJ) to exist
 
 .PHONY : clean   # .PHONY ignores files named clean
 clean:
-	-$(RM) $(OBJ) 
+	-$(RM) $(OBJ)
 
 tidy:
 	indent $(INDOPT) $(SRC) $(HED)

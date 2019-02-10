@@ -11,6 +11,7 @@ high_height=480
 image_packets=4
 enable_bmp085=N
 enable_geiger=Y
+enable_serial=Y
 external_temperature=1
 adc_vmax=18.5
 logging=GPS,Telemetry
