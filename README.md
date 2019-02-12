@@ -8,3 +8,5 @@
 # PITS - HAB Tracker software for the PITS boards #
 
 Based off of the PITS board created by Dave Akerman (dave@sccs.co.uk)
+
+Our Callsign: KM4FFQ-11 
