@@ -1,40 +1,21 @@
-/*
- * serialTest.c:
- *	Very simple program to test the serial port. Expects
- *	the port to be looped back to itself
- *
- * Copyright (c) 2012-2013 Gordon Henderson. <projects@drogon.net>
- ***********************************************************************
- * This file is part of wiringPi:
- *	https://projects.drogon.net/raspberry-pi/wiringpi/
- *
- *    wiringPi is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU Lesser General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    wiringPi is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU Lesser General Public License for more details.
- *
- *    You should have received a copy of the GNU Lesser General Public License
- *    along with wiringPi.  If not, see <http://www.gnu.org/licenses/>.
- ***********************************************************************
- */
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include <wiringPi.h>
 #include <wiringSerial.h>
 
-int SerialMain ()
+#include "gps.h"
+#include "misc.h"
+
+int *SerialMain(void *some_void_ptr)
 {
+  struct TGPS *GPS;
+	GPS = (struct TGPS *)some_void_ptr;
+
   int fd ;
-  int count ;
-  unsigned int nextTime ;
 
   if ((fd = serialOpen ("/dev/ttyAMA0", 115200)) < 0)
   {
@@ -48,28 +29,25 @@ int SerialMain ()
     return 1 ;
   }
 
-  nextTime = millis () + 300 ;
-
-  for (count = 0 ; count < 256 ; )
+  while (1)
   {
-    if (millis () > nextTime)
-    {
-      printf ("\nOut: %3d: ", count) ;
-      fflush (stdout) ;
-      serialPutchar (fd, count) ;	//this just prints a count up but we will edit this for the serial writing once we integrate it
-      nextTime += 300 ;
-      ++count ;
-    }
 
-    delay (3) ;
+    char *msgOut ;
+    if (asprintf(&msgOut, "{\"Altitude\": %d, \"Temperature\": %f, \"Humidity\": %f, \"Pressure\": %f, \"Geiger\": %d}",
+      GPS->Altitude, GPS->DS18B20Temperature[Config.ExternalDS18B20], GPS->Humidity, GPS->Pressure,
+      GPS->GeigerCount) >= 0 && msgOut != NULL)
+      {
+        serialPuts(fd, msgOut) ;
+        free(msgOut) ;
+      }
 
-    while (serialDataAvail (fd))
-    {
-      printf (" -> %3d", serialGetchar (fd)) ;
-      fflush (stdout) ;
-    }
+    delay (30000) ; // delay 30 seconds
+
+    // while (serialDataAvail (fd))
+    // {
+    //   printf (" -> %3d", serialGetchar (fd)) ;
+    //   fflush (stdout) ;
+    // }
   }
-
-  printf ("\n") ;
   return 0 ;
 }
