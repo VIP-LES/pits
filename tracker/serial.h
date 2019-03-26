@@ -1,1 +1,1 @@
-int SerialMain ();
+int SerialMain (void *some_void_ptr);
