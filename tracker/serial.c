@@ -26,7 +26,7 @@ int *SerialMain(void *some_void_ptr)
   {
     if ((fd1 = serialOpen("/dev/ttyACM0", 9600)) < 0)
     {
-      fprintf(stderr, "Unable to open serial device: %s\n", strerror(errno));
+      fprintf(stderr, "Unable to open serial device 1: %s\n", strerror(errno));
       delay(30000); // delay 30 seconds
     }
     else
@@ -39,7 +39,7 @@ int *SerialMain(void *some_void_ptr)
   {
     if ((fd2 = serialOpen("/dev/ttyACM1", 9600)) < 0)
     {
-      fprintf(stderr, "Unable to open serial device: %s\n", strerror(errno));
+      fprintf(stderr, "Unable to open serial device 2: %s\n", strerror(errno));
       delay(30000); // delay 30 seconds
     }
     else
@@ -71,10 +71,10 @@ int *SerialMain(void *some_void_ptr)
     if (serialDataAvail(fd2))
     {
       log = fopen(fileName, "a");
-      fprintf(log, "%3d", serialGetchar(fd2));
+      fprintf(log, "%c", serialGetchar(fd2));
       while (serialDataAvail(fd2))
       {
-        fprintf(log, "%3d", serialGetchar(fd2));
+        fprintf(log, "%c", serialGetchar(fd2));
       }
       fprintf(log, "\n");
       fclose(log);
