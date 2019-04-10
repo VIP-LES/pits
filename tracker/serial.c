@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include <wiringPi.h>
 #include <wiringSerial.h>
@@ -58,9 +59,8 @@ int *SerialMain(void *some_void_ptr)
   {
     // send out data via particle board
     char *msgOut;
-    if (asprintf(&msgOut, "{\"Altitude\": %d, \"Temperature\": %f, \"Humidity\": %f, \"Pressure\": %f, \"Geiger\": %d}",
-                 GPS->Altitude, GPS->DS18B20Temperature[Config.ExternalDS18B20], GPS->Humidity, GPS->Pressure,
-                 GPS->GeigerCount) >= 0 &&
+    if (asprintf(&msgOut, "{\"Latitude\": %f, \"Longitude\": %f, \"Altitude\": %" PRId32 ", \"Speed\": %i, \"Direction\": %i}",
+                 GPS->Latitude, GPS->Longitude, GPS->Altitude, GPS->Speed, GPS->Direction) >= 0 &&
         msgOut != NULL)
     {
       serialPuts(fd1, msgOut);
@@ -71,6 +71,7 @@ int *SerialMain(void *some_void_ptr)
     if (serialDataAvail(fd2))
     {
       log = fopen(fileName, "a");
+      fprintf(log, "%i:%i:%i\n", GPS->Hours, GPS->Minutes, GPS->Seconds);
       fprintf(log, "%c", serialGetchar(fd2));
       while (serialDataAvail(fd2))
       {
