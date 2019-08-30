@@ -20,11 +20,11 @@ typedef signed int		SI;
 typedef signed long int	SL;
 typedef signed short int	SS;
 typedef signed char	SC;
- 
+
 #define attr(a) __attribute__((a))
- 
+
 #define packed attr(packed)
- 
+
 /* WAV header, 44-byte total */
 typedef struct{
  UL riff	packed;
@@ -41,12 +41,12 @@ typedef struct{
  UL dat	packed;
  UL dlen	packed;
 }WAVHDR;
- 
+
 // APRS / AFSK variables
-  
-#define APRS_DEVID "APEHAB"  
+
+#define APRS_DEVID "APEHAB"
 #define APRS_COMMENT "Georgia Tech VIP: Lightning at the Edge of Space"
- 
+
 /* "converts" 4-char string to long int */
 #define dw(a) (*(UL*)(a))
 
@@ -98,19 +98,19 @@ void ax25_frame(uint8_t *frame, int *length, char *scallsign, char sssid, char *
   *(s++) = 0xF0; /* Protocol ID: 0xF0 = no layer 3 data */
 
   // printf ("Length A is %d\n", s - frame);
-  
-  // printf ("Adding %d bytes\n", 
+
+  // printf ("Adding %d bytes\n",
   vsnprintf((char *) s, 200 - (s - frame) - 2, data, va);
   va_end(va);
 
   // printf ("Length B is %d\n", strlen(frame));
-  
+
 	// Calculate and append the checksum
 
 	for (CRC=0xffff, s=frame; *s; s++)
     {
 		CRC ^= ((unsigned int)*s);
-		
+
         for (j=0; j<8; j++)
         {
 			if (CRC & 1)
@@ -123,16 +123,16 @@ void ax25_frame(uint8_t *frame, int *length, char *scallsign, char sssid, char *
 			}
         }
     }
-	/* 
+	/*
 	for (CRC=0xffff, s=frame; *s; s++)
     {
   	  CRC = ((CRC) >> 8) ^ ccitt_table[((CRC) ^ *s) & 0xff];
 	}
 	*/
-	
+
 	*(s++) = ~(CRC & 0xFF);
 	*(s++) = ~((CRC >> 8) & 0xFF);
-  
+
 	// printf ("Checksum = %02Xh %02Xh\n", *(s-2), *(s-1));
 
 	*length = s - frame;
@@ -140,7 +140,7 @@ void ax25_frame(uint8_t *frame, int *length, char *scallsign, char sssid, char *
 
 /* Makes 44-byte header for 8-bit WAV in memory
 usage: wavhdr(pointer,sampleRate,dataLength) */
- 
+
 void wavhdr(void*m,UL hz,UL dlen){
  WAVHDR*p=m;
  p->riff=dw("RIFF");
@@ -175,13 +175,13 @@ void make_and_write_freq(FILE *f, UL cycles_per_bit, UL baud, UL lfreq, UL hfreq
 		step = (512 * lfreq << 7) / (cycles_per_bit * baud);
 		// printf("_");
 	}
-	
+
 	for (i=0; i<cycles_per_bit; i++)
 	{
 		// fwrite(&(_sine_table[(phase >> 7) & 0x1FF]), 1, 1, f);
 		int16_t v = _sine_table[(phase >> 7) & 0x1FF] * 0x80 - 0x4000;
 		if (High & Config.APRS_Preemphasis)
-		{	
+		{
 			v *= 0.65;
 		}
 		else
@@ -198,7 +198,7 @@ void make_and_write_bit(FILE *f, UL cycles_per_bit, UL baud, UL lfreq, UL hfreq,
 {
 	static int8_t bc = 0;
 	static int8_t High = 0;
-			
+
 	if(BitStuffing)
 	{
 		if(bc >= 5)
@@ -212,7 +212,7 @@ void make_and_write_bit(FILE *f, UL cycles_per_bit, UL baud, UL lfreq, UL hfreq,
 	{
 		bc = 0;
 	}
-	
+
 	if (Bit)
 	{
 		// Stay with same frequency, but only for a max of 5 in a row
@@ -224,17 +224,17 @@ void make_and_write_bit(FILE *f, UL cycles_per_bit, UL baud, UL lfreq, UL hfreq,
 		High = !High;
 		bc = 0;
 	}
-	
-	make_and_write_freq(f, cycles_per_bit, baud, lfreq, hfreq, High);	
+
+	make_and_write_freq(f, cycles_per_bit, baud, lfreq, hfreq, High);
 }
 
- 
+
 void make_and_write_byte(FILE *f, UL cycles_per_bit, UL baud, UL lfreq, UL hfreq, unsigned char Character, int BitStuffing)
 {
 	int i;
-	
+
 	// printf("%02X ", Character);
-		
+
 	for (i=0; i<8; i++)
 	{
 		make_and_write_bit(f, cycles_per_bit, baud, lfreq, hfreq, Character & 1, BitStuffing);
@@ -242,7 +242,7 @@ void make_and_write_byte(FILE *f, UL cycles_per_bit, UL baud, UL lfreq, UL hfreq
 	}
 }
 
- 
+
 /* makes wav file */
 void makeafsk(UL freq, UL baud, UL lfreq, UL hfreq, unsigned char Message[4][200], int message_length[], int message_count, int total_message_length)
 {
@@ -250,7 +250,7 @@ void makeafsk(UL freq, UL baud, UL lfreq, UL hfreq, unsigned char Message[4][200
 	FILE *f;
 	int i, j;
 	WAVHDR Header;
-	
+
 	if ((f = fopen("aprs.wav","wb")) != NULL)
 	{
 		printf("Building APRS packet\n");
@@ -271,10 +271,10 @@ void makeafsk(UL freq, UL baud, UL lfreq, UL hfreq, unsigned char Message[4][200
 
 		// Make header
 		wavhdr(&Header, freq, total_cycles * 2 + 10);		// * 2 + 10 is new
-		
+
 		// Write wav header
 		fwrite(&Header, 1, 44, f);
-		
+
 		// Write preamble
 		for (j=0; j<message_count; j++)
 		{
@@ -282,7 +282,7 @@ void makeafsk(UL freq, UL baud, UL lfreq, UL hfreq, unsigned char Message[4][200
 			{
 				make_and_write_byte(f, cycles_per_bit, baud, lfreq, hfreq, 0x7E, 0);
 			}
-			
+
 			// Create and write actual data
 			for (i=0; i<message_length[j]; i++)
 			{
@@ -300,12 +300,12 @@ void makeafsk(UL freq, UL baud, UL lfreq, UL hfreq, unsigned char Message[4][200
 				make_and_write_freq(f, cycles_per_bit, baud, lfreq, hfreq, 0);
 			}
 		}
-		
+
 		fclose(f);
 	}
 }
 
-	
+
 void SendAPRS(struct TGPS *GPS)
 {
 	unsigned char frames[4][200];
@@ -320,7 +320,7 @@ void SendAPRS(struct TGPS *GPS)
 	uint32_t aprs_temperature, aprs_voltage;
 
 	seq++;
-	
+
 	// Convert the min.dec coordinates to APRS compressed format
 	aprs_lat = 900000000 - GPS->Latitude * 10000000;
 	aprs_lat = aprs_lat / 26 - aprs_lat / 2710 + aprs_lat / 15384615;
@@ -335,27 +335,27 @@ void SendAPRS(struct TGPS *GPS)
 	GPS->BatteryVoltage = 4.321;
 	aprs_voltage = GPS->BatteryVoltage * 1000;
 	ax25_base91enc(stlm + 4, 2, aprs_temperature);
-	ax25_base91enc(stlm + 6, 2, GPS->GeigerCount);
+	ax25_base91enc(stlm + 6, 4, GPS->GeigerCount);
 	//ax25_base91enc(stlm + 8, 2, GPS->GeigerCount);
-	
+
     ax25_frame(frames[0], &lengths[0],
 		Config.APRS_Callsign,
 		Config.APRS_ID,
 		APRS_DEVID, 0,
-		(GPS->Altitude > Config.APRS_Altitude) ? 0 : 1,	
+		(GPS->Altitude > Config.APRS_Altitude) ? 0 : 1,
 		(GPS->Altitude > Config.APRS_Altitude) ? Config.APRS_HighPath : 1,
 		"!/%s%sO   /A=%06ld|%s|%s",
 		ax25_base91enc(slat, 4, aprs_lat),
 		ax25_base91enc(slng, 4, aprs_lon),
 		aprs_alt, stlm, APRS_COMMENT);
 	total_length = lengths[0];
-	message_count = 1;	
+	message_count = 1;
 
 		// "!/%s%sO   /A=%06ld|%s|%s/%s,%d'C,http://www.pi-in-the-sky.com",
 		// ax25_base91enc(slat, 4, aprs_lat),
 		// ax25_base91enc(slng, 4, aprs_lon),
 		// aprs_alt, stlm, comment, Config.APRS_Callsign, Count);
-		
+
 
 	if (Config.APRS_Telemetry)
 	{
@@ -363,7 +363,7 @@ void SendAPRS(struct TGPS *GPS)
 
 		sprintf(s, strncpy(s, Config.APRS_Callsign, 7));
 		if(Config.APRS_ID) snprintf(s + strlen(s), 4, "-%i", Config.APRS_ID);
-		
+
       // Transmit telemetry definitions
 		ax25_frame(frames[1], &lengths[1],
 		Config.APRS_Callsign,
@@ -393,9 +393,9 @@ void SendAPRS(struct TGPS *GPS)
 			s);
 		total_length += lengths[3];
 
-		message_count += 3;	
+		message_count += 3;
 	}
-			
+
 	makeafsk(48000, 1200, 1200, 2200, frames, lengths, message_count, total_length);
 }
 
@@ -414,7 +414,7 @@ void LoadAPRSConfig(FILE *fp, struct TConfig *Config)
 	Config->APRS_Altitude = ReadInteger(fp, "APRS_Altitude", -1, 0, 0);
 	ReadBoolean(fp, "APRS_Preemphasis", -1, 0, &(Config->APRS_Preemphasis));
 	ReadBoolean(fp, "APRS_Telemetry", -1, 0, &(Config->APRS_Telemetry));
-	
+
 	if (*(Config->APRS_Callsign) && Config->APRS_ID && Config->APRS_Period)
 	{
 		printf("APRS enabled for callsign %s:%d every %d minute%s with offset %ds\n", Config->APRS_Callsign, Config->APRS_ID, Config->APRS_Period, Config->APRS_Period > 1 ? "s" : "", Config->APRS_Offset);
@@ -436,20 +436,20 @@ void *APRSLoop(void *some_void_ptr)
 
 	GPS = (struct TGPS *)some_void_ptr;
 	RandomOffset = 0;
-	
+
     while (1)
 	{
-		if (GPS->Satellites > 3)
+		if (GPS->Satellites > 0)
 		{
 			if (TimeToSendAPRS(GPS->SecondsInDay, Config.APRS_Period * 60, Config.APRS_Offset + RandomOffset))
 			{
 				SendAPRS(GPS);
-				
+
 				if (Config.APRS_Random)
 				{
 					RandomOffset = rand() % Config.APRS_Random;
 				}
-				
+
 				sleep(2 + Config.APRS_Random);			// So we don't Tx again almost immediately
 			}
 		}

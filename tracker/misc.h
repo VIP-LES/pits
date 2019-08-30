@@ -41,7 +41,7 @@ struct TLoRaDevice
 	int CallingCount;
 	int PacketsSinceLastCall;
 	int ReturnStateAfterCall;
-	
+
 	// For placing a pause between packets (e.g. to allow another payload to repeat our packets)
 	int PacketEveryMilliSeconds;
 	int MillisSinceLastPacket;
@@ -49,7 +49,7 @@ struct TLoRaDevice
 	// Uplink cycle
 	int UplinkPeriod;
 	int UplinkCycle;
-	
+
 	// Uplink settings
 	int UplinkMode;
 	double UplinkFrequency;
@@ -63,10 +63,10 @@ struct TLoRaDevice
 	int LastPacketSNR;
 	int PacketCount;
 	int ListenOnly;					// True for listen-only payload that waits for an uplink before responding (or times out and sends anyway)
-	
+
 #	ifdef EXTRAS_PRESENT
 #		include "ex_misc_lora.h"
-#	endif		
+#	endif
 };
 
 struct TSSDVPackets
@@ -116,15 +116,15 @@ struct TChannel
 	// int SSDVTotalRecords;
 	// int NextSSDVFileReady;
 	int ImagesRequested;
-	
+
 	// SSDV Variables
 	int SSDVImageNumber;					// Image number for last Tx
 	int SSDVPacketNumber;					// Packet number for last Tx
 	int SSDVNumberOfPackets;				// Number of packets in image currently being sent
 	int SSDVFileNumber;						// Number of latest converted image
-	
+
 	int SendMode;
-	
+
 	// SSDV Packet Log
 	struct TSSDVPackets SSDVPackets[3];
 };
@@ -145,33 +145,34 @@ struct TConfig
 	int DisableADC;
 	int32_t BuoyModeAltitude;
 	double MaxADCVoltage;
-	
+
 	// Camera
-	int Camera;	
+	int Camera;
 	int SSDVHigh;
 	char CameraSettings[80];
 	char SSDVSettings[16];
-	
+
 	// Extra devices
 	int EnableBMP085;
 	int EnableBME280;
 	int EnableGeiger;
+	int EnableSerial;
 	int ExternalDS18B20;
-	
+
 	// Logging
 	int EnableGPSLogging;
 	int EnableTelemetryLogging;
 	int TelemetryFileUpdate;		// Period in seconds
-	
+
 	// LEDs
 	int LED_OK;
 	int LED_Warn;
-	
+
 	// GPS Settings
 	int SDA;
 	int SCL;
 	char GPSDevice[64];
-	
+
 	// RTTY Settings
 	int DisableRTTY;
 	char Frequency[8];
@@ -188,33 +189,33 @@ struct TConfig
 	int APRS_HighPath;
 	int APRS_Preemphasis;
 	int APRS_Telemetry;
-	
+
 	// LoRa Settings
 	struct TLoRaDevice LoRaDevices[2];
 
 	// Radio channels
 	struct TChannel Channels[6];		// 0 is RTTY, 1 is APRS, 2/3 are LoRa, 4 is for full-size images, 5 is for piping to external software
-	
+
 	// GPS
 	char GPSSource[128];
 	int Power_Saving;
 	int Flight_Mode_Altitude;
-	
+
 	// Landing prediction
 	int EnableLandingPrediction;
 	int32_t TargetAltitude;
 	int32_t LandingAltitude;
-	
+
 	float cd_area;
 	float payload_weight;
 	char PredictionID[16];
-	
+
 	// External data file (read into telemetry)
 	char ExternalDataFileName[100];
-	
+
 #	ifdef EXTRAS_PRESENT
 #		include "ex_misc_config.h"
-#	endif		
+#	endif
 };
 
 extern struct TConfig Config;
