@@ -25,7 +25,7 @@ int *SerialMain(void *some_void_ptr)
 
   while (1)
   {
-    if ((fd1 = serialOpen("/dev/ttyACM0", 9600)) < 0)
+    if ((fd1 = serialOpen("/dev/particle", 9600)) < 0)
     {
       fprintf(stderr, "Unable to open serial device 1: %s\n", strerror(errno));
       delay(30000); // delay 30 seconds
@@ -38,7 +38,7 @@ int *SerialMain(void *some_void_ptr)
 
   while (1)
   {
-    if ((fd2 = serialOpen("/dev/ttyACM1", 9600)) < 0)
+    if ((fd2 = serialOpen("/dev/sensor_arduino", 9600)) < 0)
     {
       fprintf(stderr, "Unable to open serial device 2: %s\n", strerror(errno));
       delay(30000); // delay 30 seconds
